@@ -102,15 +102,23 @@
   <script>
     // Basic session check and UI hooks (kept minimal so products.js can take over)
     document.addEventListener('DOMContentLoaded', () => {
-      // simple auth guard: redirect to login if not authenticated
-      const session = window.tiaAuth?.getSession ? window.tiaAuth.getSession() : null;
-      if (!session) {
-        // Not authenticated — redirect to login
-        // If you want to bypass during development, set session via console:
-        // sessionStorage.setItem('tia_session', JSON.stringify({ id:'dev', username:'dev-admin', role:'admin' }));
-        window.location.href = 'index.html';
-        return;
-      }
+      
+      // Tolerant session check — do not redirect, allow guest access
+let session = null;
+try {
+  if (window.tiaAuth && typeof window.tiaAuth.getSession === 'function') {
+    session = window.tiaAuth.getSession();
+  } else if (sessionStorage.getItem('tia_session')) {
+    session = JSON.parse(sessionStorage.getItem('tia_session'));
+  }
+} catch (e) {
+  session = null;
+}
+if (!session) {
+  // allow access as Guest (no redirect)
+  session = { id:'guest', username:'Guest', role:'viewer' };
+}
+
 
       // Show user info
       const badge = document.getElementById('sessionBadge');
@@ -207,3 +215,4 @@
   </script>
 </body>
 </html>
+
