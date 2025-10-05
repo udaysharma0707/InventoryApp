@@ -32,8 +32,9 @@
                 <h4 class="card-title mb-0">Tile Inventory</h4>
                 <small class="text-muted">Inventory & Sales Management</small>
               </div>
+ 
+              <form id="loginForm">
 
-              <form id="loginForm" action="#" method="post" novalidate>
                 <!-- Username / Email -->
                 <div class="mb-3">
                   <label for="loginUser" class="form-label">Username or Email</label>
@@ -129,8 +130,17 @@
         // If auth.js is present it should intercept the submit and handle it (via event listener or by replacing form.submit)
       }, false);
     })();
+
+
+
+document.getElementById("loginForm").addEventListener("submit", function(e) {
+  e.preventDefault(); // Stop form from submitting to server
+});
+
+
   </script>
 </body>
 </html>
+
 
 
