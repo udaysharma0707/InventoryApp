@@ -1,65 +1,62 @@
 /* js/inventory.js
-   Inventory/navigation helpers for open access mode.
-   - Ensures Add/Edit navigation won't trigger login redirects.
-   - Provides helper functions window.appInventory.openAddProduct/openEditProduct
+   Product Inventory Storage
+   - Uses localStorage for data persistence
+   - No authentication or external APIs
+   - Exposes functions for other pages (products, add/edit)
 */
+
 (() => {
-  'use strict';
+  const STORAGE_KEY = 'tile_inventory_products';
 
-  const SESSION_KEY = 'tia_session';
-
-  function ensureSession() {
+  function loadAll() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
     try {
-      if (!sessionStorage.getItem(SESSION_KEY)) {
-        const devUser = { id: 'dev_' + Date.now(), username: 'dev-admin', role: 'admin', createdAt: new Date().toISOString() };
-        sessionStorage.setItem(SESSION_KEY, JSON.stringify(devUser));
-      }
+      return JSON.parse(raw);
     } catch (e) {
-      console.warn('inventory.js: ensureSession failed', e);
+      console.error('Failed to parse products:', e);
+      return [];
     }
   }
 
-  function openAddProduct() {
-    ensureSession();
-    window.location.href = 'add-product.html';
+  function saveAll(products) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
   }
 
-  function openEditProduct(productId) {
-    ensureSession();
-    if (!productId) {
-      window.location.href = 'products.html';
-    } else {
-      window.location.href = `edit-product.html?id=${encodeURIComponent(productId)}`;
-    }
+  function addProduct(product) {
+    const products = loadAll();
+    product.id = `prod_${Date.now()}`;
+    product.createdAt = new Date().toISOString();
+    products.push(product);
+    saveAll(products);
+    return product;
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    ensureSession();
+  function updateProduct(id, updates) {
+    const products = loadAll();
+    const index = products.findIndex(p => p.id === id);
+    if (index === -1) throw new Error('Product not found');
+    products[index] = { ...products[index], ...updates, updatedAt: new Date().toISOString() };
+    saveAll(products);
+  }
 
-    // Safe wiring if page has btnAddProduct or links using data-action attributes
-    const addBtn = document.getElementById('btnAddProduct');
-    if (addBtn) {
-      addBtn.addEventListener('click', (e) => {
-        e && e.preventDefault && e.preventDefault();
-        openAddProduct();
-      });
-    }
+  function deleteProduct(id) {
+    const products = loadAll().filter(p => p.id !== id);
+    saveAll(products);
+  }
 
-    // Optional: attach delegation for any element with data-open-add or data-open-edit
-    document.body.addEventListener('click', (ev) => {
-      const target = ev.target.closest && ev.target.closest('[data-open-add], [data-open-edit]');
-      if (!target) return;
-      ev.preventDefault();
-      if (target.hasAttribute('data-open-add')) openAddProduct();
-      if (target.hasAttribute('data-open-edit')) {
-        const id = target.getAttribute('data-open-edit');
-        openEditProduct(id);
-      }
-    });
-  });
+  function getProduct(id) {
+    return loadAll().find(p => p.id === id) || null;
+  }
 
-  window.appInventory = {
-    openAddProduct,
-    openEditProduct
+  // Export globally
+  window.tiaInventory = {
+    loadAll,
+    addProduct,
+    updateProduct,
+    deleteProduct,
+    getProduct
   };
+
+  console.info('Inventory module loaded (no login, localStorage mode)');
 })();
