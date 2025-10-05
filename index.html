@@ -79,12 +79,34 @@
             </div>
           </div>
 
+<!-- Paste inside the card body below the form -->
+<div class="text-center mt-3">
+  <button id="devSkipBtn" class="btn btn-outline-secondary btn-sm">Skip login (dev)</button>
+</div>
+
+<script>
+  document.getElementById('devSkipBtn').addEventListener('click', () => {
+    sessionStorage.setItem('tia_session', JSON.stringify({
+      id: 'dev_admin_1', username: 'dev-admin', role: 'admin', createdAt: new Date().toISOString()
+    }));
+    // go to products page
+    window.location.href = 'products.html';
+  });
+
+
+
+
+
+
+          
+
           <!-- Optional quick-info card -->
           <div class="mt-3 text-center">
             <small class="text-secondary">
               Tip: Next step — create <code>css/style.css</code> (Step 2) then <code>js/auth.js</code> (Step 3).
             </small>
           </div>
+          
 
         </div>
       </div>
@@ -122,3 +144,4 @@
   </script>
 </body>
 </html>
+
