@@ -3,132 +3,37 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Tile Inventory — Welcome</title>
+  <title>Tile Inventory — Loading...</title>
 
-  <!-- Bootstrap CSS (CDN) -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" 
-        integrity="sha384-ENjdO4Dr2bkBIFxQpeoA6VJ0sA7r9f8e1z6bV9zzTtmI3zVfQ5KkN0tCTKf2kJNm" crossorigin="anonymous">
-
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
   <link rel="stylesheet" href="css/style.css" />
-  <link rel="icon" href="images/favicon.png" />
-  <meta name="description" content="Tile & Sanitaryware Inventory — Demo" />
-  <style>
-    /* small on-page hint styles */
-    .dev-badge { position: fixed; right: 12px; bottom: 12px; background: rgba(13,110,253,0.06); color:#0b5ed7; padding:8px 12px; border-radius:8px; font-weight:600; box-shadow:0 6px 18px rgba(11,93,215,0.04);}
-  </style>
-</head>
-<body class="bg-light">
-
-  <main class="d-flex align-items-center min-vh-100">
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-sm-10 col-md-8 col-lg-5">
-          <div class="card shadow-sm">
-            <div class="card-body p-4">
-              <div class="text-center mb-4">
-                <img src="images/logo.png" alt="Tile Inventory Logo" class="mb-3" style="max-width:120px;">
-                <h4 class="card-title mb-0">Tile Inventory</h4>
-                <small class="text-muted">Inventory & Sales Management</small>
-              </div>
-
-              <!-- Kept the form visually for continuity but it no longer blocks access -->
-              <form id="loginForm" onsubmit="return false;">
-                <div class="mb-3">
-                  <label for="loginUser" class="form-label">Username or Email</label>
-                  <input type="text" class="form-control" id="loginUser" name="username"
-                         placeholder="e.g., admin@example.com" aria-describedby="userHelp" />
-                  <div id="userHelp" class="form-text">This demo allows immediate access — no login required.</div>
-                </div>
-
-                <div class="mb-3">
-                  <label for="loginPass" class="form-label">Password</label>
-                  <input type="password" class="form-control" id="loginPass" name="password"
-                         placeholder="(not required)" />
-                </div>
-
-                <div class="d-grid mb-2">
-                  <!-- This button is just a convenience; site auto-redirects on load -->
-                  <button id="enterBtn" type="button" class="btn btn-primary btn-lg">
-                    Enter App (No Login Required)
-                  </button>
-                </div>
-
-                <div class="text-center">
-                  <small class="text-muted">If you want authentication later, remove the auto-bypass script.</small>
-                </div>
-              </form>
-            </div>
-
-            <div class="card-footer text-center small text-muted">
-              © <span id="currentYear"></span> Tile Inventory — Demo build
-            </div>
-          </div>
-
-          <div class="mt-3 text-center">
-            <small class="text-secondary">
-              Tip: Next step — create <code>css/style.css</code> then <code>js/auth.js</code> (if you need real auth).
-            </small>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <div class="dev-badge">Dev mode: open access</div>
-
-  <noscript class="text-center p-3 bg-warning">JavaScript is required for full functionality.</noscript>
-
-  <!-- Bootstrap JS bundle -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-          integrity="sha384-qENq8u7z0kYlEo5u7Vw0JxQk4f6p5jFf7y6p0y3f2Y2D8q1nU7qf8b6z3q2r1fS+" crossorigin="anonymous"></script>
-
-  <!-- Optional: keep auth.js loaded for other pages that may use it -->
-  <script src="js/auth.js" defer></script>
 
   <script>
-    // set copyright year
-    document.getElementById('currentYear').textContent = new Date().getFullYear();
-
-    // Convenience: when user clicks Enter App, create session and go to products.html
-    document.getElementById('enterBtn').addEventListener('click', () => {
-      createDevSessionAndGo();
-    });
-
-    // Create a minimal dev session and redirect (non-destructive)
-    function createDevSessionAndGo() {
-      try {
-        const existing = sessionStorage.getItem('tia_session');
-        if (!existing) {
-          const devUser = {
-            id: 'dev_admin_' + Date.now(),
-            username: 'dev-admin',
-            role: 'admin',
-            createdAt: new Date().toISOString()
-          };
-          sessionStorage.setItem('tia_session', JSON.stringify(devUser));
-          localStorage.setItem('tia_remember', devUser.username);
-        }
-      } catch (e) {
-        console.warn('Could not create dev session:', e);
-      }
-      // navigate to products page
+    // Immediately redirect to main interface — no login required
+    window.addEventListener('DOMContentLoaded', () => {
       window.location.href = 'products.html';
-    }
-
-    // Auto-bypass on page load: create session (if none) and redirect immediately.
-    (function autoBypass() {
-      try {
-        // If user intentionally wants to stay on login page, they can cancel redirect by commenting below.
-        // Only auto-redirect when no session exists.
-        if (!sessionStorage.getItem('tia_session')) {
-          // small timeout so page renders briefly (helps debugging)
-          setTimeout(createDevSessionAndGo, 250);
-        }
-      } catch (e) {
-        console.warn('autoBypass failed', e);
-      }
-    })();
+    });
   </script>
+
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f8f9fa;
+    }
+    .loader {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="loader">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-3">Loading Inventory App...</p>
+  </div>
 </body>
 </html>
